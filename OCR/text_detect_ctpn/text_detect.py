@@ -20,10 +20,10 @@ def resize_im(im, scale, max_scale=None):
 
 def load_tf_model():
     # load config file
-    cfg.TEST.checkpoints_path = './ctpn/checkpoints'
+    cfg.TEST.checkpoints_path = './text_detect_ctpn/checkpoints'
 
     # init session
-    gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=1.0)
+    gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.6)
     config = tf.ConfigProto(allow_soft_placement=True, gpu_options=gpu_options)
     sess = tf.Session(config=config)
 

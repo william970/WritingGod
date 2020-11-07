@@ -5,7 +5,7 @@
       <entry url="file://$PROJECT_DIR$">
         <entryData>
           <resourceRoots>
-            <path value="file://$PROJECT_DIR$/OCR/ctpn" />
+            <path value="file://$PROJECT_DIR$/OCR/text_detect_ctpn" />
           </resourceRoots>
         </entryData>
       </entry>
