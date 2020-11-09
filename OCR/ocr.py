@@ -5,7 +5,8 @@ import cv2
 from math import *
 import numpy as np
 from PIL import Image
-
+import re
+import matplotlib.pyplot as plt
 #sys.path.append(os.getcwd() + '/text_detect_ctpn')
 from text_detect_ctpn.text_detect import text_detect
 from lib.fast_rcnn.config import cfg_from_file
@@ -74,14 +75,48 @@ def charRec(img, text_recs, adjust=False):
  
    return results
 
-def model(img, adjust=False):
+def model(img,sortrose, adjust=False):
     """
     @img: 图片
     @adjust: 是否调整文字识别结果
     """
     cfg_from_file('./text_detect_ctpn/ctpn/text.yml')
     text_recs, img_framed, img = text_detect(img)
+
+
     text_recs = sort_box(text_recs)
+
+    plt.figure(figsize=(20, 20))
+    plt.imshow(img_framed)
+    plt.show()
+
     result = charRec(img, text_recs, adjust)
-    return result, img_framed
+
+    isname = {}
+    #做控制
+    for key in result:
+        temp = result[key][1]
+        out = re.sub("[\[\]\s+\.\!\/_:;=$%×^{》*(+\“\"\']+|[+——！？、~@#￥%……&*（）]+", "", temp)
+        out = re.sub("[a-zA-Z①-⑩]", "", out)
+        outremovenumber = re.sub("[0-9]", "", out)
+        if (1.0 * len(outremovenumber) / len(temp) <= 0.5):
+            isname[key] = 2
+            result[key][1] = outremovenumber
+            continue
+
+        aveH = (result[key][0][1]+result[key][0][3]+result[key][0][5]+result[key][0][7])/4
+        aveH = aveH * img_framed.shape[0] / img.shape[0]
+        flag = False
+        for j in range(len(sortrose)):
+            if (sortrose[j] - aveH) < 50 and (sortrose[j]-aveH) > 0:
+                flag = True
+                break
+        if flag:
+            result[key][1] = outremovenumber
+            isname[key] = 1
+        else:
+            result[key][1] = outremovenumber
+            isname[key] = 0
+
+    return result, img_framed, isname
 
